@@ -14,7 +14,7 @@ const App = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await axios.get("http://localhost:3002/candidates")
+      const response = await axios.get("https://applicant-tracker.onrender.com/candidates")
       console.log("Candidates fetched:", response.data)
       setCandidates(response.data)
     } catch (error) {

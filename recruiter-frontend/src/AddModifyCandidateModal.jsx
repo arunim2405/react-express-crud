@@ -45,7 +45,7 @@ function AddModifyCandidateModal(props) {
       if (mode === "edit") {
         let allDetails = { ...newCandidate }
         delete allDetails.candidateId
-        const response = await axios.patch(`http://localhost:3002/candidates/${newCandidate.candidateId}`, allDetails)
+        const response = await axios.patch(`https://applicant-tracker.onrender.com/candidates/${newCandidate.candidateId}`, allDetails)
         console.log("Candidate updated:", response.data)
         setCandidates(prevCandidates => {
           const index = prevCandidates.findIndex(candidate => candidate.id === newCandidate.candidateId)
@@ -62,7 +62,7 @@ function AddModifyCandidateModal(props) {
         })
         setIsOpen(false)
       } else {
-        const response = await axios.post("http://localhost:3002/candidates", newCandidate)
+        const response = await axios.post("https://applicant-tracker.onrender.com/candidates", newCandidate)
         console.log("Candidate added:", response.data)
         setCandidates(prevCandidates => [...prevCandidates, response.data])
         setNewCandidate({
@@ -89,7 +89,7 @@ function AddModifyCandidateModal(props) {
 
   const handleDeleteCandidate = async () => {
     try {
-      const response = await axios.delete(`http://localhost:3002/candidates/${newCandidate.candidateId}`)
+      const response = await axios.delete(`https://applicant-tracker.onrender.com/candidates/${newCandidate.candidateId}`)
       console.log("Candidate deleted:", response.data)
       setCandidates(prevCandidates => {
         return prevCandidates.filter(candidate => candidate.id !== newCandidate.candidateId)

@@ -1,32 +1,38 @@
 const express = require("express")
 const bodyParser = require("body-parser")
+const cors = require("cors")
+
+require("dotenv").config()
+
 const { Pool } = require("pg")
 
 const app = express()
-const port = 3000
+const port = process.env.APP_PORT || 3002
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 const pool = new Pool({
-  user: "your_database_user",
-  host: "localhost",
-  database: "your_database_name",
-  password: "your_database_password",
-  port: 5432
+  //   user: process.env.DB_USER,
+  //   host: process.env.DB_HOST,
+  //   database: process.env.DB_NAME,
+  //   password: process.env.DB_PASSWORD,
+  //   port: process.env.DB_PORT,
+  connectionString: process.env.DB_URL
 })
 
-app.post("/candidates", async (req, res) => {
-  const { name, email, phone, skills, status, expectedSalary } = req.body
+app.use(cors())
 
+app.post("/candidates", async (req, res) => {
+  const { name, email, phone, skills, status, expected_salary } = req.body
   try {
     const result = await pool.query("INSERT INTO candidates (name, email, phone, skills, status, expected_salary) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", [
       name,
       email,
       phone,
-      skills,
+      JSON.stringify(skills),
       status,
-      expectedSalary
+      expected_salary
     ])
 
     res.json(result.rows[0])
@@ -38,10 +44,23 @@ app.post("/candidates", async (req, res) => {
 
 app.patch("/candidates/:id", async (req, res) => {
   const { id } = req.params
-  const { status, expectedSalary } = req.body
+  const updates = req.body
+  console.log("updates", updates)
+  if (updates.skills) {
+    updates.skills = JSON.stringify(updates.skills)
+  }
+
+  const fields = Object.keys(updates)
+  const values = Object.values(updates)
+
+  if (fields.length === 0) {
+    return res.status(400).json({ error: "No fields to update" })
+  }
+
+  const query = `UPDATE candidates SET ${fields.map((_, i) => `${fields[i]} = $${i + 1}`).join(", ")} WHERE id = $${fields.length + 1} RETURNING *`
 
   try {
-    const result = await pool.query("UPDATE candidates SET status = $1, expectedSalary = $2 WHERE id = $3 RETURNING *", [status, expectedSalary, id])
+    const result = await pool.query(query, [...values, id])
 
     if (result.rows.length > 0) {
       res.json(result.rows[0])

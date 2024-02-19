@@ -82,7 +82,7 @@ const CandidateTable = props => {
                 {/* <td class="px-6 py-4">{candidate.category}</td> */}
                 <td class="px-6 py-4">{candidate.phone}</td>
                 <td class="px-6 py-4">{candidate.status}</td>
-                <td class="px-6 py-4">{candidate.expected_salary}</td>
+                <td class="px-6 py-4">₹{candidate.expected_salary}</td>
                 <td class="px-6 py-4">{getCandidateScore(candidate.skills)}</td>
                 <td
                   class="px-6 py-4 text-blue-600 dark:text-blue-500 hover:underline"
